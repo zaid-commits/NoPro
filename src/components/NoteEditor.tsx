@@ -19,7 +19,7 @@ interface NoteEditorProps {
   onAddTag: (tag: string) => void
 }
 
-export function NoteEditor({ tags, notes, onSave, onAddTag }: NoteEditorProps) {
+export function NoteEditor({  notes, onSave, onAddTag }: NoteEditorProps) {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [noteTags, setNoteTags] = useState<string[]>([])
