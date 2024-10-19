@@ -3,27 +3,26 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { v4 as uuidv4 } from 'uuid'
-
+import { TagManager } from './TagManager'
 
 interface Note {
   id: string
   title: string
   content: string
-  category: string
+  tags: string[]
 }
 
 interface NoteEditorProps {
-  categories: string[]
+  tags: string[]
   notes?: Note[]
-  onSave: (note: Note) => void
+  onSave: (note: Omit<Note, 'id'>) => void
+  onAddTag: (tag: string) => void
 }
 
-export function NoteEditor({ categories, notes, onSave }: NoteEditorProps) {
+export function NoteEditor({ tags, notes, onSave, onAddTag }: NoteEditorProps) {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
-  const [category, setCategory] = useState(categories[0])
+  const [noteTags, setNoteTags] = useState<string[]>([])
   const navigate = useNavigate()
   const { id } = useParams()
 
@@ -33,20 +32,29 @@ export function NoteEditor({ categories, notes, onSave }: NoteEditorProps) {
       if (note) {
         setTitle(note.title)
         setContent(note.content)
-        setCategory(note.category)
+        setNoteTags(note.tags)
       }
     }
   }, [id, notes])
 
   const handleSave = () => {
-    const note = {
-      id: id || uuidv4(),
+    onSave({
       title,
       content,
-      category
-    }
-    onSave(note)
+      tags: noteTags,
+    })
     navigate('/')
+  }
+
+  const handleAddTag = (tag: string) => {
+    if (!noteTags.includes(tag)) {
+      setNoteTags([...noteTags, tag])
+    }
+    onAddTag(tag)
+  }
+
+  const handleRemoveTag = (tag: string) => {
+    setNoteTags(noteTags.filter(t => t !== tag))
   }
 
   return (
@@ -63,18 +71,11 @@ export function NoteEditor({ categories, notes, onSave }: NoteEditorProps) {
         onChange={(e) => setContent(e.target.value)}
         className="min-h-[200px]"
       />
-      <Select value={category} onValueChange={setCategory}>
-        <SelectTrigger>
-          <SelectValue placeholder="Select a category" />
-        </SelectTrigger>
-        <SelectContent>
-          {categories.map((cat) => (
-            <SelectItem key={cat} value={cat}>
-              {cat}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <TagManager
+        tags={noteTags}
+        onAddTag={handleAddTag}
+        onRemoveTag={handleRemoveTag}
+      />
       <Button onClick={handleSave}>Save Note</Button>
     </div>
   )
