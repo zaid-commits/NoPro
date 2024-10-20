@@ -67,6 +67,7 @@ export default function App() {
     }
   }
 
+  
   const removeTag = (tag: string) => {
     setTags(tags.filter(t => t !== tag))
     setNotes(notes.map(note => ({
