@@ -10,6 +10,7 @@ import { Input } from './components/ui/input'
 import { Button } from './components/ui/button'
 import { PlusCircle } from 'lucide-react'
 import { NotesList } from './components/NotesList'
+import { Toaster, toast } from 'react-hot-toast'
 
 interface Note {
   id: string
@@ -49,31 +50,37 @@ export default function App() {
       updatedAt: Date.now(),
     }
     setNotes([newNote, ...notes])
+    toast.success('Note added successfully!')
   }
 
   const updateNote = (updatedNote: Note) => {
     setNotes(notes.map(note => 
       note.id === updatedNote.id ? { ...updatedNote, updatedAt: Date.now() } : note
     ))
+    toast.success('Note updated successfully!')
   }
 
   const deleteNote = (id: string) => {
     setNotes(notes.filter(note => note.id !== id))
+    toast.success('Note deleted successfully!')
   }
 
   const addTag = (tag: string) => {
     if (!tags.includes(tag)) {
       setTags([...tags, tag])
+      toast.success(`Tag "${tag}" added successfully!`)
+    } else {
+      toast.error(`Tag "${tag}" already exists!`)
     }
   }
 
-  
   const removeTag = (tag: string) => {
     setTags(tags.filter(t => t !== tag))
     setNotes(notes.map(note => ({
       ...note,
       tags: note.tags.filter(t => t !== tag)
     })))
+    toast.success(`Tag "${tag}" removed successfully!`)
   }
 
   const filteredNotes = notes.filter(note => 
@@ -124,6 +131,7 @@ export default function App() {
           notes={notes}
           tags={tags}
         />
+        <Toaster position="bottom-right" />
       </div>
     </Router>
   )
