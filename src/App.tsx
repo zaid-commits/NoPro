@@ -131,7 +131,7 @@ export default function App() {
           notes={notes}
           tags={tags}
         />
-        <Toaster position="bottom-right" />
+        <Toaster position="top-center" />
       </div>
     </Router>
   )
