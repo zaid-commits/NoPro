@@ -1,12 +1,11 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Command, ArrowRight, Search } from "lucide-react"
-import { Footer } from './Footer'
+import { ArrowRight, Search } from "lucide-react"
 import { FeaturesSection } from './FeaturesSection'
 export function LandingPage() {
   const [isCommandMenuOpen, setIsCommandMenuOpen] = useState(false)
@@ -15,7 +14,7 @@ export function LandingPage() {
     <div className="min-h-screen flex flex-col">
 
       <main className="flex-grow">
-        <section className="bg-gradient-to-br from-primary to-secondary text-primary-foreground min-h-[calc(100vh-4rem)] flex flex-col justify-center items-center text-center px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <section className="bg-white text-primary min-h-[calc(100vh-4rem)] flex flex-col justify-center items-center text-center px-4 sm:px-6 lg:px-8 relative overflow-hidden border-b border-border">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -23,9 +22,9 @@ export function LandingPage() {
             className="relative z-10"
           >
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight">
-              NoPro: Your Thoughts,{' '}
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-100">
-                Organized
+               Your Thoughts,{' '}
+              <span className="text-white">
+                Organized!
               </span>
             </h1>
             <p className="text-xl sm:text-2xl mb-8 max-w-3xl mx-auto">
@@ -49,8 +48,7 @@ export function LandingPage() {
             animate={{ opacity: 1 }}
             transition={{ duration: 1.5, delay: 0.5 }}
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 opacity-20" />
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjZmZmIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDVMNSAwWk02IDRMNCA2Wk0tMSAxTDEgLTFaIiBzdHJva2U9IiNjZmQ4ZGMiIHN0cm9rZS13aWR0aD0iMSI+PC9wYXRoPgo8L3N2Zz4=')] opacity-10" />
+            
           </motion.div>
         </section>
 
