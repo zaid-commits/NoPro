@@ -6,11 +6,13 @@ import { NoteView } from './components/NoteView'
 import { TopNav } from './components/TopNav'
 import { CommandMenu } from './components/CommandMenu'
 import { TagManager } from './components/TagManager'
+import { NotesList } from './components/NotesList'
+import { Toaster, toast } from 'react-hot-toast'
 import { Input } from './components/ui/input'
 import { Button } from './components/ui/button'
 import { PlusCircle } from 'lucide-react'
-import { NotesList } from './components/NotesList'
-import { Toaster, toast } from 'react-hot-toast'
+import { LandingPage } from './components/LandingPage'
+import { Footer } from './components/Footer'
 
 interface Note {
   id: string
@@ -68,22 +70,14 @@ export default function App() {
   const addTag = (tag: string) => {
     if (!tags.includes(tag)) {
       setTags([...tags, tag])
-      toast.success(`Tag "${tag}" added successfully!`)
-    } else {
-      toast.error(`Tag "${tag}" already exists!`)
     }
   }
 
   const removeTag = (tag: string) => {
     setTags(tags.filter(t => t !== tag))
-    setNotes(notes.map(note => ({
-      ...note,
-      tags: note.tags.filter(t => t !== tag)
-    })))
-    toast.success(`Tag "${tag}" removed successfully!`)
   }
 
-  const filteredNotes = notes.filter(note => 
+  const filteredNotes = notes.filter(note =>
     note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     note.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
     note.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -91,40 +85,44 @@ export default function App() {
 
   return (
     <Router>
-      <div className="flex flex-col h-screen bg-background text-foreground">
+      <div className="flex flex-col min-h-screen bg-gradient-to-br from-background to-secondary">
         <TopNav setIsCommandMenuOpen={setIsCommandMenuOpen} />
-        <main className="flex-1 p-4 overflow-auto">
-          <div className="max-w-5xl mx-auto space-y-4">
-            <Routes>
-              <Route path="/" element={
-                <>
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 space-y-2 sm:space-y-0">
-                    <h1 className="text-3xl font-bold">My Notes</h1>
-                    <div className="flex items-center space-x-2 w-full sm:w-auto">
-                      <Input
-                        type="text"
-                        placeholder="Search notes..."
-                        value={searchTerm}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-                        className="w-full sm:w-64"
-                      />
-                      <Button asChild>
-                        <Link to="/new">
-                          <PlusCircle className="mr-2 h-4 w-4" /> New Note
-                        </Link>
-                      </Button>
-                    </div>
+        <main className="flex-1">
+          <Routes>
+            <Route path="/" element={
+              <>
+              <LandingPage/>
+              </>
+            } />
+            <Route path="/notes" element={
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 space-y-4 sm:space-y-0">
+                  <h1 className="text-4xl font-bold text-primary">My Notes</h1>
+                  <div className="flex items-center space-x-4 w-full sm:w-auto">
+                    <Input
+                      type="text"
+                      placeholder="Search notes..."
+                      value={searchTerm}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                      className="w-full sm:w-64"
+                    />
+                    <Button asChild>
+                      <Link to="/new">
+                        <PlusCircle className="mr-2 h-4 w-4" /> New Note
+                      </Link>
+                    </Button>
                   </div>
-                  <TagManager tags={tags} onAddTag={addTag} onRemoveTag={removeTag} />
-                  <NotesList notes={filteredNotes} />
-                </>
-              } />
-              <Route path="/new" element={<NoteEditor tags={tags} onSave={addNote} onAddTag={addTag} />} />
-              <Route path="/edit/:id" element={<NoteEditor tags={tags} notes={notes} onSave={(note) => updateNote({ ...note as Note, updatedAt: Date.now() })} onAddTag={addTag} />} />
-              <Route path="/note/:id" element={<NoteView notes={notes} onDelete={deleteNote} />} />
-            </Routes>
-          </div>
+                </div>
+                <TagManager tags={tags} onAddTag={addTag} onRemoveTag={removeTag} />
+                <NotesList notes={filteredNotes} />
+              </div>
+            } />
+            <Route path="/new" element={<NoteEditor tags={tags} onSave={addNote} onAddTag={addTag} />} />
+            <Route path="/edit/:id" element={<NoteEditor tags={tags} notes={notes} onSave={(note) => updateNote({ ...note as Note, updatedAt: Date.now() })} onAddTag={addTag} />} />
+            <Route path="/note/:id" element={<NoteView notes={notes} onDelete={deleteNote} />} />
+          </Routes>
         </main>
+        <Footer />
         <CommandMenu 
           isOpen={isCommandMenuOpen} 
           setIsOpen={setIsCommandMenuOpen}
