@@ -21,9 +21,9 @@ export function LandingPage() {
             transition={{ duration: 0.8 }}
             className="relative z-10"
           >
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold mb-6 text-gray-700 leading-tight">
                Your Thoughts,{' '}
-              <span className="text-white">
+              <span className="text-black">
                 Organized!
               </span>
             </h1>
