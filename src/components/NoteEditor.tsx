@@ -17,7 +17,7 @@ interface Note {
 interface NoteEditorProps {
   tags: string[]
   notes?: Note[]
-  onSave: (note: Omit<Note, 'id'>) => void
+  onSave: (note: Omit<Note, 'id'> | Note) => void
   onAddTag: (tag: string) => void
 }
 
@@ -36,15 +36,31 @@ export function NoteEditor({ notes, onSave, onAddTag }: NoteEditorProps) {
         setContent(note.content)
         setNoteTags(note.tags)
       }
+    } else {
+      // Reset state when creating a new note
+      setTitle('')
+      setContent('')
+      setNoteTags([])
     }
   }, [id, notes])
 
   const handleSave = () => {
-    onSave({
-      title,
-      content,
-      tags: noteTags,
-    })
+    if (id) {
+      // If id exists, we're editing an existing note
+      onSave({
+        id,
+        title,
+        content,
+        tags: noteTags,
+      })
+    } else {
+      // If no id, we're creating a new note
+      onSave({
+        title,
+        content,
+        tags: noteTags,
+      })
+    }
     navigate('/notes')
   }
 
