@@ -1,58 +1,89 @@
-import { useState, useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
-import { v4 as uuidv4 } from 'uuid'
-import { NoteEditor } from './components/NoteEditor'
-import { NoteView } from './components/NoteView'
-import { TopNav } from './components/TopNav'
-import { CommandMenu } from './components/CommandMenu'
-import { TagManager } from './components/TagManager'
-import { NotesList } from './components/NotesList'
-import { Toaster, toast } from 'react-hot-toast'
-import { Input } from './components/ui/input'
-import { Button } from './components/ui/button'
-import { PlusCircle, Search } from 'lucide-react'
-import { LandingPage } from './components/LandingPage'
-import { Footer } from './components/Footer'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
+import { NoteEditor } from './components/NoteEditor';
+import { NoteView } from './components/NoteView';
+import { TopNav } from './components/TopNav';
+import { CommandMenu } from './components/CommandMenu';
+import { TagManager } from './components/TagManager';
+import { Toaster, toast } from 'react-hot-toast';
+import { Input } from './components/ui/input';
+import { Button } from './components/ui/button';
+import { PlusCircle, Search, Calendar, Clock, Tag } from 'lucide-react';
+import { LandingPage } from './components/LandingPage';
+import { Footer } from './components/Footer';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from './components/ui/card';
+import { Badge } from './components/ui/badge';
+import axios from 'axios';
 
 interface Note {
-  id: string
-  title: string
-  content: string
-  tags: string[]
-  createdAt: number
-  updatedAt: number
+  id: string;
+  title: string;
+  content: string;
+  tags: string[];
+  createdAt: number;
+  updatedAt: number;
+}
+
+export function NotesList({ notes }: { notes: Note[] }) {
+  return (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {notes.map((note) => (
+        <Link key={note.id} to={`/note/${note.id}`}>
+          <Card className="h-full hover:shadow-lg transition-shadow border-l-4 border-blue-500">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg font-bold text-blue-700">{note.title}</CardTitle>
+              <div className="flex items-center text-xs text-gray-500">
+                <Calendar className="w-3 h-3 mr-1" />
+                <span>{new Date(note.createdAt).toLocaleDateString()}</span>
+                <Clock className="w-3 h-3 ml-2 mr-1" />
+                <span>{new Date(note.updatedAt).toLocaleTimeString()}</span>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-700 line-clamp-3">{note.content}</p>
+            </CardContent>
+            <CardFooter className="pt-2">
+              <div className="flex items-center">
+                <Tag className="w-4 h-4 mr-2 text-gray-500" />
+                <div className="flex flex-wrap gap-1">
+                  {note.tags && note.tags.map((tag) => (
+                    <Badge key={tag} variant="secondary" className="text-xs bg-gray-200 text-gray-700">{tag}</Badge>
+                  ))}
+                </div>
+              </div>
+            </CardFooter>
+          </Card>
+        </Link>
+      ))}
+    </div>
+  );
 }
 
 export default function App() {
-  const [notes, setNotes] = useState<Note[]>([])
-  const [tags, setTags] = useState<string[]>([])
-  const [searchTerm, setSearchTerm] = useState('')
-  const [isCommandMenuOpen, setIsCommandMenuOpen] = useState(false)
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isCommandMenuOpen, setIsCommandMenuOpen] = useState(false);
 
   useEffect(() => {
-    const savedNotes = localStorage.getItem('notes')
-    const savedTags = localStorage.getItem('tags')
-    if (savedNotes) setNotes(JSON.parse(savedNotes))
-    if (savedTags) setTags(JSON.parse(savedTags))
-  }, [])
+    const fetchNotes = async () => {
+      const response = await axios.get('http://localhost:5000/notes');
+      setNotes(response.data);
+    };
+    fetchNotes();
+  }, []);
 
-  useEffect(() => {
-    localStorage.setItem('notes', JSON.stringify(notes))
-  }, [notes])
-
-  useEffect(() => {
-    localStorage.setItem('tags', JSON.stringify(tags))
-  }, [tags])
-
-  const addNote = (note: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const newNote: Note = {
+  const addNote = async (note: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const newNote = {
       ...note,
       id: uuidv4(),
       createdAt: Date.now(),
       updatedAt: Date.now(),
-    }
-    setNotes([newNote, ...notes])
+    };
+    const response = await axios.post('http://localhost:5000/notes', newNote);
+    setNotes([response.data, ...notes]);
     toast.success('Note added successfully!', {
       icon: '🎉',
       style: {
@@ -60,13 +91,12 @@ export default function App() {
         background: '#333',
         color: '#fff',
       },
-    })
-  }
+    });
+  };
 
-  const updateNote = (updatedNote: Note) => {
-    setNotes(notes.map(note => 
-      note.id === updatedNote.id ? { ...updatedNote, updatedAt: Date.now() } : note
-    ))
+  const updateNote = async (updatedNote: Note) => {
+    const response = await axios.put(`http://localhost:5000/notes/${updatedNote.id}`, updatedNote);
+    setNotes(notes.map(note => (note.id === updatedNote.id ? response.data : note)));
     toast.success('Note updated successfully!', {
       icon: '✅',
       style: {
@@ -74,11 +104,12 @@ export default function App() {
         background: '#333',
         color: '#fff',
       },
-    })
-  }
+    });
+  };
 
-  const deleteNote = (id: string) => {
-    setNotes(notes.filter(note => note.id !== id))
+  const deleteNote = async (id: string) => {
+    await axios.delete(`http://localhost:5000/notes/${id}`);
+    setNotes(notes.filter(note => note.id !== id));
     toast.success('Note deleted successfully!', {
       icon: '🗑️',
       style: {
@@ -86,24 +117,24 @@ export default function App() {
         background: '#333',
         color: '#fff',
       },
-    })
-  }
+    });
+  };
 
   const addTag = (tag: string) => {
     if (!tags.includes(tag)) {
-      setTags([...tags, tag])
+      setTags([...tags, tag]);
     }
-  }
+  };
 
   const removeTag = (tag: string) => {
-    setTags(tags.filter(t => t !== tag))
-  }
+    setTags(tags.filter(t => t !== tag));
+  };
 
   const filteredNotes = notes.filter(note =>
     note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     note.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
     note.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-  )
+  );
 
   return (
     <Router>
@@ -144,7 +175,7 @@ export default function App() {
                         />
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                       </div>
-                      <Button asChild className="bg-primary hover:bg-primary-dark transition-colors duration-200">
+                      <Button asChild className="bg-primary hover:bg-primary-dark transition-colors duration=200">
                         <Link to="/new">
                           <PlusCircle className="mr-2 h-4 w-4" /> New Note
                         </Link>
@@ -216,5 +247,5 @@ export default function App() {
         />
       </div>
     </Router>
-  )
+  );
 }

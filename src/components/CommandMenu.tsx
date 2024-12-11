@@ -18,7 +18,7 @@ interface CommandMenuProps {
 }
 
 export function CommandMenu({ isOpen, setIsOpen, notes, tags }: CommandMenuProps) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -32,8 +32,8 @@ export function CommandMenu({ isOpen, setIsOpen, notes, tags }: CommandMenuProps
                 <CommandItem
                   key={note.id}
                   onSelect={() => {
-                    navigate(`/note/${note.id}`)
-                    setIsOpen(false)
+                    navigate(`/note/${note.id}`);
+                    setIsOpen(false);
                   }}
                 >
                   <File className="mr-2 h-4 w-4" />
@@ -46,8 +46,8 @@ export function CommandMenu({ isOpen, setIsOpen, notes, tags }: CommandMenuProps
                 <CommandItem
                   key={tag}
                   onSelect={() => {
-                    navigate(`/?tag=${tag}`)
-                    setIsOpen(false)
+                    navigate(`/?tag=${tag}`);
+                    setIsOpen(false);
                   }}
                 >
                   <Hash className="mr-2 h-4 w-4" />
@@ -59,5 +59,5 @@ export function CommandMenu({ isOpen, setIsOpen, notes, tags }: CommandMenuProps
         </Command>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
